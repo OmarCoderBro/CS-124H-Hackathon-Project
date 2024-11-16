@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../static/styles.css">
 </head>
-    <body>
+    <body id = "fullpage">
         <div class = "navbar">
             <ul class = "navlist">
                 <li class = "listelement"><a class = "navlink" href="">Home</a></li>
@@ -14,27 +14,55 @@
             </ul>
         </div>
         <div id = "calendarsection">
-            <div id = "createcalendar">
-                <div id = "calendarcreation">
-                    <h1> Create your calendar here!</h1>
-                    <div id = "timeselection">
-                        <label  id = "smallsubheading" for = "selectstarttime">Choose which time you want your schedule to start.</label><br>
-                        <select id = "selectstarttime"></select>
-                        <label  id = "smallsubheading" for = "selectendtime">Choose which time you want your schedule to end.</label><br>
-                        <select id = "selectendtime"></select>
-                        <form id = "benefitform">
-                            <input type = "checkbox" name = "benefit" id = "timeinterval1" value = 1>
-                            <label for = "benefit1">  15 minute intervals </label> <br>
-                            <input type = "checkbox" name = "benefit" id = "timeinterval1" value = "Life Insurance">
-                            <label for = "benefit2"> 30 minute intervals </label> <br>
-                            <input type = "checkbox" name = "benefit" id = "timeinterval1" value = "Dental Insurance">
-                            <label for = "benefit3"> 1 hour intervals </label> <br>
-                        </form>
+            <div id = "infosection">
+                <h1>Matching Schedules, and making time</h1>
+                <p1 id = "infofrontparagraph">Our app is a powerful and intuitive scheduling platform designed to simplify the process of organizing events and meetings by dynamically linking individual and group schedules. The app allows users to create detailed schedules with customizable time blocks, event descriptions, and priority settings. By leveraging advanced algorithms, it can analyze multiple schedules to identify optimal overlapping time slots that suit the availability of all participants. This functionality is especially useful for coordinating team meetings, study groups, or collaborative projects where aligning different calendars can be challenging. Additionally, the app provides integration with popular calendar tools like Google Calendar, Microsoft Outlook, and Apple Calendar, ensuring seamless updates and notifications. Users can also set preferences for specific time zones, recurring events, and buffer times between engagements, enhancing the personalization and efficiency of the scheduling process. Whether planning a one-on-one coffee chat or a large-scale event, the app reduces the back-and-forth communication by instantly proposing the best time for all parties involved, saving time and minimizing scheduling conflicts.</p1>
+                <button id = "tryoutbutton">Try out this technology</button>
+            </div>
+            <div id = "inputinfosection">
+                <div id = "createcalendar">
+                    <div id = "calendarcreation">
+                        <h1> Create your calendar here!</h1>
+                        <div id = "timeselection">
+                            <label  id = "smallsubheading" for = "selectstarttime">Choose which time you want your schedule to start.</label><br>
+                            <select id = "selectstarttime"></select>
+                            <label  id = "smallsubheading" for = "selectendtime">Choose which time you want your schedule to end.</label><br>
+                            <select id = "selectendtime"></select>
+                        </div>
+                        <button id = "requestschedulebutton">Submit a request for a calendar with these times!</button>
                     </div>
                 </div>
             </div>
-            <div id = "display calendar">
-
+        </div>
+        <div id = "bottomnavbar">
+            <div class = "bottomnavbarcontent">
+                <div class = "bnavbarcol1">
+                    <p id = "smallsubheading">Company</p>
+                    <p>Blog</p>
+                    <p>Terms and Conditions</p>
+                    <p>Privacy Policy</p>
+                    <p>About us</p>
+                </div>
+                <div class = "bnavbarcol1">
+                    <p id = "smallsubheading">Customer Service</p>
+                    <p>Contact Us</p>
+                    <p>Social Media</p>
+                    <p>Privacy Policy</p>
+                    <p>About us</p>
+                </div>
+                <div class = "bnavbarcol1">
+                    <p id = "smallsubheading">About Us</p>
+                    <p>Career Paths</p>
+                    <p>Our Models</p>
+                    <p>Our Missions</p>
+                    <p>Our community</p>
+                </div>
+                <div class = "bnavbarcol1">
+                    <p id = "smallsubheading">Follow Us</p>
+                    <div>
+                        <img id = "socialmedialogos" src = "../static/csv,images/set-of-social-media-icon-in-round-bakground-free-vector-removebg-preview-removebg-preview.png" alt = "socialmedialogos">
+                    </div>
+                </div>
             </div>
         </div>
         <script src="../static/script.js"></script>
