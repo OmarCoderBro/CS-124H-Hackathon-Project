@@ -8,30 +8,47 @@
         <div class = "navbar">
             <ul class = "navlist">
                 <li class = "listelement"><a class = "navlink" href="">Home</a></li>
-                <li class = "listelement"><a class = "navlink" href="">About Us</a></li>
-                <li class = "listelement"><a class = "navlink" href="">Contact</a></li>
-                <li class = "listelement getyourmatch"><a class = "navlink" href="">Create A Schedule!</a></li>
+                <li class = "listelement"><a class = "navlink" href="">Calendar</a></li>
+                <li class = "listelement"><a class = "navlink" href="">Events</a></li>
+                <li class = "listelement"><a class = "navlink" href="">Log-Out</a></li>
+                <img id = "logonavbar" src = "../static/calendar.jpg" alt = "logo"></img>
             </ul>
         </div>
         <div id = "calendarsection">
             <div id = "infosection">
-                <h1>Matching Schedules, and making time</h1>
+                <h1>Welcome to <span id = "logotext">Alignify!</span></h1>
+                <h1 id = "smallheading">Matching Schedules, and making time</h1>
                 <p1 id = "infofrontparagraph">Our app is a powerful and intuitive scheduling platform designed to simplify the process of organizing events and meetings by dynamically linking individual and group schedules. The app allows users to create detailed schedules with customizable time blocks, event descriptions, and priority settings. By leveraging advanced algorithms, it can analyze multiple schedules to identify optimal overlapping time slots that suit the availability of all participants. This functionality is especially useful for coordinating team meetings, study groups, or collaborative projects where aligning different calendars can be challenging. Additionally, the app provides integration with popular calendar tools like Google Calendar, Microsoft Outlook, and Apple Calendar, ensuring seamless updates and notifications. Users can also set preferences for specific time zones, recurring events, and buffer times between engagements, enhancing the personalization and efficiency of the scheduling process. Whether planning a one-on-one coffee chat or a large-scale event, the app reduces the back-and-forth communication by instantly proposing the best time for all parties involved, saving time and minimizing scheduling conflicts.</p1>
                 <button id = "tryoutbutton">Try out this technology</button>
             </div>
-            <div id = "inputinfosection">
-                <div id = "createcalendar">
-                    <div id = "calendarcreation">
-                        <h1> Create your calendar here!</h1>
-                        <div id = "timeselection">
-                            <label  id = "smallsubheading" for = "selectstarttime">Choose which time you want your schedule to start.</label><br>
-                            <select id = "selectstarttime"></select>
-                            <label  id = "smallsubheading" for = "selectendtime">Choose which time you want your schedule to end.</label><br>
-                            <select id = "selectendtime"></select>
-                        </div>
-                        <button id = "requestschedulebutton">Submit a request for a calendar with these times!</button>
-                    </div>
+            <div id = "instructionsection">
+                <div id = "instructionsectioncard">
+                    <img id = "logocardimg" src = "../static/calendar.jpg" alt = "image">
+                    <h1 id = "instructioncardheading">What is <span id = "logotext">Alignify</span>?</h1>
+                    <ul>
+                        <li>Simplify scheduling by linking multiple calendars and schedules to find the best times for events.</li>
+                        <li>Analyze and align schedules across multiple participants.</li>
+                        <li>Suggest optimal meeting times automatically.</li>
+                        <li>Support for recurring events and custom time preferences.</li>
+                        <li>Create customizable schedules with time blocks, descriptions, and priorities.</li>
+                    </ul>
+                    <button id = "transporttotimesbutton">Make a schedule now!</button>
                 </div>
+            </div>
+        </div>
+        <div id = "backgroundsection">
+            <div id = "inputinstructions">
+                <h1></h1>
+            </div>
+            <div id = "calendarcreation">
+                <h1> Create your calendar here!</h1>
+                <div id = "timeselection">
+                    <label  id = "smallsubheading" for = "selectstarttime">Choose which time you want your schedule to start.</label><br>
+                    <select id = "selectstarttime"></select>
+                    <label  id = "smallsubheading" for = "selectendtime">Choose which time you want your schedule to end.</label><br>
+                    <select id = "selectendtime"></select>
+                </div>
+                <button id = "requestschedulebutton">Submit a request for a calendar with these times!</button>
             </div>
         </div>
         <div id = "bottomnavbar">
