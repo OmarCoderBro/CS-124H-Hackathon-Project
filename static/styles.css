@@ -1,7 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
 #fullpage {
     font-family: "Source Code Pro";
 }
+
+.event-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.event-form {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
 .navlist {
     list-style-type: none;
     padding: none;
@@ -10,6 +41,7 @@
     color: white;
     overflow: hidden;
 }
+
 .listelement {
     display: inline;
     float: left;
@@ -22,9 +54,11 @@
     padding: 30px 10px;
     text-decoration: none;
 }
+
 .listelement:hover {
     background-color: black;
 }
+<<<<<<< HEAD
 #logonavbar {
     height: 80px;
     width: 120px;
@@ -175,13 +209,18 @@
     height: 200px;
     margin-left: 90px;
 }
+=======
+
+>>>>>>> 749d9882cd76de7748466d678c78d3c57c135464
 .event-item {
     background: white;
     padding: 15px;
     margin: 10px 0;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 4px solid #4CAF50;
 }
+
 .delete-btn {
     background: #ff4444;
     color: white;
@@ -191,10 +230,52 @@
     cursor: pointer;
     margin-top: 10px;
 }
+
 .delete-btn:hover {
     background: #cc0000;
 }
+<<<<<<< HEAD
 #socialmedialogos {
     width: 140px;
     height: 140px;
+=======
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.wish-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.wish-btn:hover {
+    background: #45a049;
+}
+
+button[type="submit"] {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    background: #45a049;
+}
+
+h1, h2 {
+    color: #4CAF50;
+>>>>>>> 749d9882cd76de7748466d678c78d3c57c135464
 }

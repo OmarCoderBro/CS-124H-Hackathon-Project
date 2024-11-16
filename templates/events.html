@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TimeSync - Events</title>
+<<<<<<< HEAD
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
         #fullbody {
@@ -95,6 +96,26 @@
                 <div id = "rightnavbar">
                     <img id = "logonavbar" src = "../static/calendar2.png" alt = "logo"></img>
                     <li class = "listelement"><a class = "navlink" href="/login">Log-Out</a></li>
+=======
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body id="fullpage">
+    <nav>
+        <ul class="navlist">
+            <li class="listelement"><a href="/" class="navlink">Calendar</a></li>
+            <li class="listelement"><a href="/events" class="navlink">Events</a></li>
+            <li class="listelement"><a href="/logout" class="navlink">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="event-container">
+        <h1>Create Event</h1>
+        <div class="event-form">
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventName">Event Name:</label>
+                    <input type="text" id="eventName" required>
+>>>>>>> 749d9882cd76de7748466d678c78d3c57c135464
                 </div>
             </ul>
         </div>
@@ -122,12 +143,20 @@
             </div>
         </div>
 
+<<<<<<< HEAD
             <div id="eventList">
                 <h2>Your Events</h2>
             </div>
         </div>
 
+=======
+        <div id="eventList">
+            <h2>Events</h2>
+        </div>
+    </div>
+>>>>>>> 749d9882cd76de7748466d678c78d3c57c135464
     <script>
+        const currentUser = '{{ user }}';
         function populateTimeDropdowns() {
             const startSelect = document.getElementById('selectstarttime');
             const endSelect = document.getElementById('selectendtime');
@@ -144,55 +173,98 @@
             }
         }
 
-        function loadEvents() {
-            fetch('/get_events')
-                .then(response => response.json())
-                .then(events => {
-                    const eventList = document.getElementById('eventList');
-                    eventList.innerHTML = '<h2>Your Events</h2>';
-                    
-                    if (events.length === 0) {
-                        eventList.innerHTML += '<p>No events created yet</p>';
-                        return;
-                    }
-                    
-                    events.forEach(event => {
-                        const eventDiv = document.createElement('div');
-                        eventDiv.className = 'event-item';
-                        eventDiv.innerHTML = `
-                            <h3>${event.name}</h3>
-                            <p>Start Time: ${event.start_time.toString().padStart(2, '0')}:00</p>
-                            <p>End Time: ${event.end_time.toString().padStart(2, '0')}:00</p>
-                            <button onclick="deleteEvent('${event.name}', ${event.start_time}, ${event.end_time})" 
-                                    class="delete-btn">Delete Event</button>
-                        `;
-                        eventList.appendChild(eventDiv);
-                    });
-                });
-        }
-
         function deleteEvent(name, start_time, end_time) {
-            if (confirm('Are you sure you want to delete this event?')) {
-                fetch('/delete_event', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        start_time: start_time,
-                        end_time: end_time
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.status === 'success') {
-                        loadEvents();
-                    }
-                });
+    if (confirm('Are you sure you want to delete this event?')) {
+        fetch('/delete_event', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                start_time: start_time,
+                end_time: end_time
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                loadEvents();
             }
-        }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
 
+function loadEvents() {
+    fetch('/get_events')
+        .then(response => response.json())
+        .then(events => {
+            const eventList = document.getElementById('eventList');
+            eventList.innerHTML = '<h2>Events</h2>';
+            
+            if (events.length === 0) {
+                eventList.innerHTML += '<p>No events created yet</p>';
+                return;
+            }
+            
+            events.forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'event-item';
+                
+                // Convert wished_by to array if it exists, or empty array if it doesn't
+                const wishList = event.wished_by ? 
+                    event.wished_by.split(',').filter(wish => wish.trim() !== '') : 
+                    [];
+                
+                eventDiv.innerHTML = `
+                    <div>
+                        <h3>${event.name}</h3>
+                        <p>Start Time: ${event.start_time.toString().padStart(2, '0')}:00</p>
+                        <p>End Time: ${event.end_time.toString().padStart(2, '0')}:00</p>
+                        <p>Created by: ${event.creator}</p>
+                        ${wishList.length > 0 ? 
+                            `<p>Wished by: ${wishList.join(', ')}</p>` : 
+                            '<p>No wishes yet</p>'
+                        }
+                    </div>
+                    <div class="button-group">
+                        ${event.creator !== currentUser ? 
+                            `<button onclick="wishToAttend('${event.name}', ${event.start_time}, ${event.end_time})" 
+                                    class="wish-btn">Wish to Attend</button>` : ''
+                        }
+                        ${event.creator === currentUser ? 
+                            `<button onclick="deleteEvent('${event.name}', ${event.start_time}, ${event.end_time})" 
+                                    class="delete-btn">Delete</button>` : ''
+                        }
+                    </div>
+                `;
+                eventList.appendChild(eventDiv);
+            });
+        });
+}
+function wishToAttend(name, start_time, end_time) {
+    fetch('/wish_to_attend', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            name: name,
+            start_time: start_time,
+            end_time: end_time
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Successfully added to wish list!');
+        } else if (data.error) {
+            alert(data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
         document.getElementById('eventForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = {

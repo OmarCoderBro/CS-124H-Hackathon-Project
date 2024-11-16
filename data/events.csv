@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 name,start_time,end_time,creator
 hi,6,6,User2
 test,6,6,User2
 Hello,10,20,User1
+=======
+name,start_time,end_time,creator,wished_by
+asdasdasd,4,10,User2,User1
+asd,0,7,User2,"User2,User1"
+asda,0,5,User1,"User1,User2"
+hi,0,18,User2,"User2,User1"
+>>>>>>> 749d9882cd76de7748466d678c78d3c57c135464
