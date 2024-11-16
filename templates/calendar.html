@@ -27,10 +27,32 @@
             padding: 10px;
             text-align: center;
         }
+        .nav-menu {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .nav-link {
+            padding: 10px 20px;
+            text-decoration: none;
+            color: black;
+            margin: 0 10px;
+        }
+        .nav-link:hover {
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome, {{ user }}! <a href="/logout">(Logout)</a></h1>
+    <div class="nav-menu">
+        <a href="/" class="nav-link">Calendar</a>
+        <a href="/events" class="nav-link">Events</a>
+        <a href="/logout" class="nav-link">Logout</a>
+    </div>
+    
+    <h1>Welcome, {{ user }}!</h1>
     
     <div id="personal-calendar">
         <h2>Your Availability</h2>

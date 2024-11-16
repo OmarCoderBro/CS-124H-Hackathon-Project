@@ -12,41 +12,72 @@ DATA_DIR = "data"
 USERS_FILE = os.path.join(DATA_DIR, "users.csv")
 AVAILABILITY_FILE = os.path.join(DATA_DIR, "availability.csv")
 
+# Add to your existing constants in app.py
+EVENTS_FILE = os.path.join(DATA_DIR, "events.csv")
+
+# Add to initialize_data() function
 def initialize_data():
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
-    try:
-        users = pd.read_csv(USERS_FILE)
-    except (FileNotFoundError, pd.errors.EmptyDataError):
-        users = pd.DataFrame({
-            'username': ['User1', 'User2'],
-            'password': ['password1', 'password2']
-        })
-        users.to_csv(USERS_FILE, index=False)
+    # Your existing users and availability initialization...
 
     try:
-        availability = pd.read_csv(AVAILABILITY_FILE)
+        events = pd.read_csv(EVENTS_FILE)
     except (FileNotFoundError, pd.errors.EmptyDataError):
-        # Create full day range (0-23 hours)
-        start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = start_date + timedelta(days=7)
-        times = pd.date_range(start=start_date, end=end_date, freq="1H")
-        
-        data = []
-        users = pd.read_csv(USERS_FILE)
-        for user in users['username']:
-            for time in times:
-                data.append({
-                    'user': user,
-                    'time': time.strftime('%Y-%m-%d %H:%M'),
-                    'available': 0
-                })
-        
-        availability = pd.DataFrame(data)
-        availability.to_csv(AVAILABILITY_FILE, index=False)
+        events = pd.DataFrame(columns=['name', 'start_time', 'end_time', 'creator'])
+        events.to_csv(EVENTS_FILE, index=False)
 
-    return users, availability
+# Modify the events route to handle POST
+@app.route('/events', methods=['GET', 'POST'])
+def events():
+    if 'user' not in session:
+        return redirect('/login')
+        
+    if request.method == 'POST':
+        data = request.json
+        df = pd.read_csv(EVENTS_FILE)
+        
+        new_event = {
+            'name': data['name'],
+            'start_time': data['start_time'],
+            'end_time': data['end_time'],
+            'creator': session['user']
+        }
+        
+        df = pd.concat([df, pd.DataFrame([new_event])], ignore_index=True)
+        df.to_csv(EVENTS_FILE, index=False)
+        
+        return jsonify({'status': 'success'})
+        
+    return render_template('events.html', user=session['user'])
+
+@app.route('/get_events')
+def get_events():
+    if 'user' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+        
+    df = pd.read_csv(EVENTS_FILE)
+    user_events = df[df['creator'] == session['user']]
+    return jsonify(user_events.to_dict(orient='records'))
+
+@app.route('/delete_event', methods=['POST'])
+def delete_event():
+    if 'user' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+        
+    data = request.json
+    df = pd.read_csv(EVENTS_FILE)
+    
+    # Fixed deletion logic - remove matching rows
+    mask = ~((df['name'] == data['name']) & 
+           (df['start_time'] == float(data['start_time'])) & 
+           (df['end_time'] == float(data['end_time'])) & 
+           (df['creator'] == session['user']))
+    
+    df = df[mask]
+    df.to_csv(EVENTS_FILE, index=False)
+    return jsonify({'status': 'success'})
 
 @app.route('/config')
 def get_config():
@@ -129,3 +160,4 @@ def group_availability():
 if __name__ == '__main__':
     initialize_data()
     app.run(debug=True)
+

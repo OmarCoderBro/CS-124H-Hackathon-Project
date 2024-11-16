@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeSync - Events</title>
+    <style>
+        .event-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .event-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .nav-menu {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .nav-link {
+            padding: 10px 20px;
+            text-decoration: none;
+            color: black;
+            margin: 0 10px;
+        }
+        .nav-link:hover {
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+        .event-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .delete-btn:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-menu">
+        <a href="/" class="nav-link">Calendar</a>
+        <a href="/events" class="nav-link">Events</a>
+        <a href="/logout" class="nav-link">Logout</a>
+    </div>
+
+    <div class="event-container">
+        <h1>Create Event</h1>
+        <div class="event-form">
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventName">Event Name:</label>
+                    <input type="text" id="eventName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectstarttime">Start Time:</label>
+                    <select id="selectstarttime"></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectendtime">End Time:</label>
+                    <select id="selectendtime"></select>
+                </div>
+
+                <button type="submit">Create Event</button>
+            </form>
+        </div>
+
+        <div id="eventList">
+            <h2>Your Events</h2>
+        </div>
+    </div>
+
+    <script>
+        function populateTimeDropdowns() {
+            const startSelect = document.getElementById('selectstarttime');
+            const endSelect = document.getElementById('selectendtime');
+            
+            startSelect.innerHTML = '';
+            endSelect.innerHTML = '';
+            
+            for (let hour = 0; hour < 24; hour++) {
+                const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+                const startOpt = new Option(timeStr, hour);
+                const endOpt = new Option(timeStr, hour);
+                startSelect.add(startOpt);
+                endSelect.add(endOpt);
+            }
+        }
+
+        function loadEvents() {
+            fetch('/get_events')
+                .then(response => response.json())
+                .then(events => {
+                    const eventList = document.getElementById('eventList');
+                    eventList.innerHTML = '<h2>Your Events</h2>';
+                    
+                    if (events.length === 0) {
+                        eventList.innerHTML += '<p>No events created yet</p>';
+                        return;
+                    }
+                    
+                    events.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.className = 'event-item';
+                        eventDiv.innerHTML = `
+                            <h3>${event.name}</h3>
+                            <p>Start Time: ${event.start_time.toString().padStart(2, '0')}:00</p>
+                            <p>End Time: ${event.end_time.toString().padStart(2, '0')}:00</p>
+                            <button onclick="deleteEvent('${event.name}', ${event.start_time}, ${event.end_time})" 
+                                    class="delete-btn">Delete Event</button>
+                        `;
+                        eventList.appendChild(eventDiv);
+                    });
+                });
+        }
+
+        function deleteEvent(name, start_time, end_time) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                fetch('/delete_event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        start_time: start_time,
+                        end_time: end_time
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        loadEvents();
+                    }
+                });
+            }
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('eventName').value,
+                start_time: document.getElementById('selectstarttime').value,
+                end_time: document.getElementById('selectendtime').value
+            };
+            
+            fetch('/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    alert('Event created successfully!');
+                    document.getElementById('eventForm').reset();
+                    loadEvents();
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            populateTimeDropdowns();
+            loadEvents();
+        });
+    </script>
+</body>
+</html>
