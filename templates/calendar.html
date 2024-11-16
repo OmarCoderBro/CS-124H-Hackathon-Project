@@ -1,12 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar App</title>
+    <title>Calendar</title>
+    <style>
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin: 20px;
+        }
+        .time-slot {
+            padding: 10px;
+            text-align: center;
+            background-color: pink;
+            cursor: pointer;
+        }
+        .time-slot.available {
+            background-color: #90EE90;
+        }
+        .time-slot:hover {
+            opacity: 0.8;
+        }
+        .header {
+            font-weight: bold;
+            background-color: #f0f0f0;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Calendar App</h1>
-    <div id="calendar"></div>
+    <h1>Welcome, {{ user }}! <a href="/logout">(Logout)</a></h1>
+    
+    <div id="personal-calendar">
+        <h2>Your Availability</h2>
+        <div class="calendar-grid" id="personal-grid"></div>
+    </div>
+
+    <div id="group-calendar">
+        <h2>Group Availability</h2>
+        <div class="calendar-grid" id="group-grid"></div>
+    </div>
+
+    <script>
+        // Load personal availability
+        fetch('/availability')
+            .then(response => response.json())
+            .then(data => {
+                const grid = document.getElementById('personal-grid');
+                data.forEach(slot => {
+                    const div = document.createElement('div');
+                    div.className = `time-slot ${slot.available ? 'available' : ''}`;
+                    div.textContent = slot.time;
+                    div.onclick = () => toggleAvailability(slot.time, div);
+                    grid.appendChild(div);
+                });
+            });
+
+        // Load group availability
+        fetch('/group_availability')
+            .then(response => response.json())
+            .then(data => {
+                const grid = document.getElementById('group-grid');
+                data.forEach(slot => {
+                    const div = document.createElement('div');
+                    div.className = `time-slot ${slot.percentage === 100 ? 'available' : ''}`;
+                    div.textContent = `${slot.time} (${slot.percentage}%)`;
+                    grid.appendChild(div);
+                });
+            });
+
+        function toggleAvailability(time, element) {
+            const newAvailable = element.classList.contains('available') ? 0 : 1;
+            
+            fetch('/availability', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    time: time,
+                    available: newAvailable
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    element.classList.toggle('available');
+                    // Refresh group availability
+                    location.reload();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
