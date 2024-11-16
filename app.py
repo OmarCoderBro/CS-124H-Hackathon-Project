@@ -1,21 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calendar.db'
+app.config['SECRET_KEY'] = 'your_secret_key'
+db = SQLAlchemy(app)
 
 @app.route('/')
 def home():
-    return render_template('input.html')
-
-@app.route('/generate', methods=['POST'])
-def generate():
-    # Get user input from form
-    index = request.form.get('index')
-    description = request.form.get('description')
-
-    # Placeholder for ChatGPT API call (to be replaced with API logic)
-    professional_version = f"Processed: {description}"  # Mock result
-
-    return render_template('output.html', index=index, result=professional_version)
+    return render_template('calendar.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
