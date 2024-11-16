@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect
 import pandas as pd
 from datetime import datetime, timedelta
 import os
+from config import START_HOUR, END_HOUR, TIME_INTERVAL
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -12,11 +13,9 @@ USERS_FILE = os.path.join(DATA_DIR, "users.csv")
 AVAILABILITY_FILE = os.path.join(DATA_DIR, "availability.csv")
 
 def initialize_data():
-    # Create data directory if it doesn't exist
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
-    # Initialize users
     try:
         users = pd.read_csv(USERS_FILE)
     except (FileNotFoundError, pd.errors.EmptyDataError):
@@ -26,31 +25,35 @@ def initialize_data():
         })
         users.to_csv(USERS_FILE, index=False)
 
-    # Initialize availability - FIXED: Moved outside of users exception block
     try:
         availability = pd.read_csv(AVAILABILITY_FILE)
     except (FileNotFoundError, pd.errors.EmptyDataError):
-        # Create time slots for the next 7 days
-        start_date = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+        # Create full day range (0-23 hours)
+        start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date + timedelta(days=7)
-        times = pd.date_range(start_date, end_date, freq="1H")
-        times = times[times.hour.isin(range(8, 22))]  # Only include 8 AM to 9 PM
+        times = pd.date_range(start=start_date, end=end_date, freq="1H")
         
-        # Create availability data
         data = []
-        users = pd.read_csv(USERS_FILE)  # Read users again to ensure we have the latest data
+        users = pd.read_csv(USERS_FILE)
         for user in users['username']:
             for time in times:
                 data.append({
                     'user': user,
                     'time': time.strftime('%Y-%m-%d %H:%M'),
-                    'available': 0  # 0 = unavailable, 1 = available
+                    'available': 0
                 })
         
         availability = pd.DataFrame(data)
         availability.to_csv(AVAILABILITY_FILE, index=False)
 
-    return users, availability  # Return both DataFrames for verification
+    return users, availability
+
+@app.route('/config')
+def get_config():
+    return jsonify({
+        'START_HOUR': START_HOUR,
+        'END_HOUR': END_HOUR
+    })
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -86,14 +89,20 @@ def availability():
 
     if request.method == 'GET':
         df = pd.read_csv(AVAILABILITY_FILE)
-        user_availability = df[df['user'] == session['user']]
+        df['hour'] = pd.to_datetime(df['time']).dt.hour
+        
+        # Filter by configured hours
+        user_availability = df[
+            (df['user'] == session['user']) & 
+            (df['hour'] >= START_HOUR) & 
+            (df['hour'] <= END_HOUR)
+        ]
         return jsonify(user_availability.to_dict(orient='records'))
     
     elif request.method == 'POST':
         data = request.json
         df = pd.read_csv(AVAILABILITY_FILE)
         
-        # Update availability
         df.loc[(df['user'] == session['user']) & 
                (df['time'] == data['time']), 'available'] = data['available']
         
@@ -106,9 +115,12 @@ def group_availability():
         return jsonify({'error': 'Not logged in'}), 401
 
     df = pd.read_csv(AVAILABILITY_FILE)
-    total_users = len(df['user'].unique())
+    df['hour'] = pd.to_datetime(df['time']).dt.hour
     
-    # Calculate group availability
+    # Filter by configured hours
+    df = df[(df['hour'] >= START_HOUR) & (df['hour'] <= END_HOUR)]
+    
+    total_users = len(df['user'].unique())
     group_avail = df.groupby('time')['available'].agg(['sum', 'count']).reset_index()
     group_avail['percentage'] = (group_avail['sum'] / group_avail['count']) * 100
     
