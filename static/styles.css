@@ -112,3 +112,21 @@
     background: #cc0000;
 >>>>>>> d16e6bf82d502df0881ba882aaf242ee965336e7
 }
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.wish-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.wish-btn:hover {
+    background: #45a049;
+}

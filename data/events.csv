@@ -1,3 +1,2 @@
-name,start_time,end_time,creator
-hi,6,6,User2
-test,6,6,User2
+name,start_time,end_time,creator,wished_by
+sd,0,0,User1,User2

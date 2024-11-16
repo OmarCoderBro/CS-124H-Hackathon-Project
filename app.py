@@ -58,8 +58,60 @@ def get_events():
         return jsonify({'error': 'Not logged in'}), 401
         
     df = pd.read_csv(EVENTS_FILE)
-    user_events = df[df['creator'] == session['user']]
-    return jsonify(user_events.to_dict(orient='records'))
+    
+    # Check if wished_by column exists, if not add it
+    if 'wished_by' not in df.columns:
+        df['wished_by'] = ''
+        df.to_csv(EVENTS_FILE, index=False)
+    
+    events_dict = df.to_dict(orient='records')
+    
+    # Add has_wished flag for each event
+    for event in events_dict:
+        wishes = str(event.get('wished_by', '')).split(',') if pd.notna(event.get('wished_by', '')) else []
+        event['has_wished'] = session['user'] in [w for w in wishes if w]
+        
+    return jsonify(events_dict)
+
+@app.route('/wish_to_attend', methods=['POST'])
+def wish_to_attend():
+    if 'user' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+        
+    data = request.json
+    df = pd.read_csv(EVENTS_FILE)
+    
+    # Add wished_by column if it doesn't exist
+    if 'wished_by' not in df.columns:
+        df['wished_by'] = ''
+    
+    # Find the specific event
+    mask = ((df['name'] == data['name']) & 
+            (df['start_time'] == float(data['start_time'])) & 
+            (df['end_time'] == float(data['end_time'])))
+    
+    if df[mask].empty:
+        return jsonify({'error': 'Event not found'}), 404
+    
+    event = df[mask].iloc[0]
+    
+    # Check if user is the creator
+    if event['creator'] == session['user']:
+        return jsonify({'error': 'Cannot wish to attend your own event'}), 400
+    
+    # Get current wishes and check if user already wished
+    current_wishes = str(event['wished_by']).split(',') if pd.notna(event['wished_by']) and event['wished_by'] else []
+    current_wishes = [w for w in current_wishes if w]  # Remove empty strings
+    
+    if session['user'] in current_wishes:
+        return jsonify({'error': 'Already wished to attend this event'}), 400
+    
+    # Add new wish
+    current_wishes.append(session['user'])
+    df.loc[mask, 'wished_by'] = ','.join(current_wishes)
+    
+    df.to_csv(EVENTS_FILE, index=False)
+    return jsonify({'status': 'success'})
 
 @app.route('/delete_event', methods=['POST'])
 def delete_event():
@@ -78,6 +130,7 @@ def delete_event():
     df = df[mask]
     df.to_csv(EVENTS_FILE, index=False)
     return jsonify({'status': 'success'})
+
 
 @app.route('/config')
 def get_config():
