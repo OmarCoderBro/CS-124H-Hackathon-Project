@@ -1,0 +1,51 @@
+.navlist {
+    list-style-type: none;
+    padding: none;
+    margin: none;
+    background-color: rgb(34, 68, 122);
+    color: white;
+    overflow: hidden;
+}
+.listelement {
+    display: inline;
+    float: left;
+    transition-duration: .5s;
+}
+
+.navlink {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 30px 10px;
+    text-decoration: none;
+}
+.listelement:hover {
+    background-color: black;
+}
+#createcalendar {
+    height: 600px;
+    width: auto;
+    background-color: red;
+}
+#calendarcreation {
+    width: 200px;
+    height: 300px;
+    border-radius: 10px;
+    background-color: blue;
+}
+#selectstarttime {
+    height: 50px;
+    width: 200px;
+    font-size: 17px;
+    font-family: "Roboto Mono";
+    border-radius: 10px;
+    margin-top: 20px;
+}
+#selectendtime {
+    height: 50px;
+    width: 200px;
+    font-size: 17px;
+    font-family: "Roboto Mono";
+    border-radius: 10px;
+    margin-top: 20px;
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+    <body>
+        <div class = "navbar">
+            <ul class = "navlist">
+                <li class = "listelement"><a class = "navlink" href="">Home</a></li>
+                <li class = "listelement"><a class = "navlink" href="">About Us</a></li>
+                <li class = "listelement"><a class = "navlink" href="">Contact</a></li>
+                <li class = "listelement getyourmatch"><a class = "navlink" href="">Create A Schedule!</a></li>
+            </ul>
+        </div>
+        <div id = "calendarsection">
+            <div id = "createcalendar">
+                <div id = "calendarcreation">
+                    <h1> Create your calendar here!</h1>
+                    <div id = "timeselection">
+                        <label  id = "smallsubheading" for = "selectstarttime">Choose which time you want your schedule to start.</label><br>
+                        <select id = "selectstarttime"></select>
+                        <label  id = "smallsubheading" for = "selectendtime">Choose which time you want your schedule to end.</label><br>
+                        <select id = "selectendtime"></select>
+                        <form id = "benefitform">
+                            <input type = "checkbox" name = "benefit" id = "timeinterval1" value = "Health Insurance">
+                            <label for = "benefit1">  15 minute intervals </label> <br>
+                            <input type = "checkbox" name = "benefit" id = "benefit2" value = "Life Insurance">
+                            <label for = "benefit2"> 30 minute intervals </label> <br>
+                            <input type = "checkbox" name = "benefit" id = "benefit3" value = "Dental Insurance">
+                            <label for = "benefit3"> 1 hour intervals </label> <br>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id = "display calendar">
+
+            </div>
+        </div>
+        <script src="../static/script.js"></script>
+    </body>
+</html>
