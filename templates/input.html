@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Generator</title>
+</head>
+<body>
+    <h1>Resume Generator</h1>
+    <form action="/generate" method="post">
+        <label for="index">Section Index:</label>
+        <input type="text" id="index" name="index" placeholder="e.g., 1" required><br><br>
+
+        <label for="description">Project Description:</label>
+        <textarea id="description" name="description" rows="5" placeholder="Describe your project..." required></textarea><br><br>
+
+        <button type="submit">Generate Professional Text</button>
+    </form>
+</body>
+</html>
