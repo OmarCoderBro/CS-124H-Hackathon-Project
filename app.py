@@ -200,7 +200,7 @@ def group_availability():
     df = df[(df['hour'] >= START_HOUR) & (df['hour'] <= END_HOUR)]
     
     total_users = len(df['user'].unique())
-    group_avail = df.grouspby('time')['available'].agg(['sum', 'count']).reset_index()
+    group_avail = df.groupby('time')['available'].agg(['sum', 'count']).reset_index()
     group_avail['percentage'] = (group_avail['sum'] / group_avail['count']) * 100
     
     return jsonify(group_avail.to_dict(orient='records'))
