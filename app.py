@@ -20,15 +20,14 @@ def initialize_data():
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
-    # Your existing users and availability initialization...
-
     try:
         events = pd.read_csv(EVENTS_FILE)
     except (FileNotFoundError, pd.errors.EmptyDataError):
-        events = pd.DataFrame(columns=['name', 'start_time', 'end_time', 'creator'])
+        events = pd.DataFrame(columns=['name', 'start_time', 'end_time', 'creator', 'wished_by'])
         events.to_csv(EVENTS_FILE, index=False)
 
 # Modify the events route to handle POST
+@app.route('/events', methods=['GET', 'POST'])
 @app.route('/events', methods=['GET', 'POST'])
 def events():
     if 'user' not in session:
@@ -42,7 +41,8 @@ def events():
             'name': data['name'],
             'start_time': data['start_time'],
             'end_time': data['end_time'],
-            'creator': session['user']
+            'creator': session['user'],
+            'wished_by': session['user']  # Set the creator as the first person in wished_by
         }
         
         df = pd.concat([df, pd.DataFrame([new_event])], ignore_index=True)
@@ -81,10 +81,6 @@ def wish_to_attend():
     data = request.json
     df = pd.read_csv(EVENTS_FILE)
     
-    # Add wished_by column if it doesn't exist
-    if 'wished_by' not in df.columns:
-        df['wished_by'] = ''
-    
     # Find the specific event
     mask = ((df['name'] == data['name']) & 
             (df['start_time'] == float(data['start_time'])) & 
@@ -92,26 +88,21 @@ def wish_to_attend():
     
     if df[mask].empty:
         return jsonify({'error': 'Event not found'}), 404
+        
+    event_idx = df[mask].index[0]
     
-    event = df[mask].iloc[0]
+    # Get current wishes as a list
+    current_wishes = str(df.at[event_idx, 'wished_by']).split(',') if pd.notna(df.at[event_idx, 'wished_by']) else []
+    current_wishes = [w.strip() for w in current_wishes if w.strip()]
     
-    # Check if user is the creator
-    if event['creator'] == session['user']:
-        return jsonify({'error': 'Cannot wish to attend your own event'}), 400
+    # Add new wish if not already present
+    if session['user'] not in current_wishes:
+        current_wishes.append(session['user'])
+        df.at[event_idx, 'wished_by'] = ','.join(current_wishes)
+        df.to_csv(EVENTS_FILE, index=False)
+        return jsonify({'status': 'success'})
     
-    # Get current wishes and check if user already wished
-    current_wishes = str(event['wished_by']).split(',') if pd.notna(event['wished_by']) and event['wished_by'] else []
-    current_wishes = [w for w in current_wishes if w]  # Remove empty strings
-    
-    if session['user'] in current_wishes:
-        return jsonify({'error': 'Already wished to attend this event'}), 400
-    
-    # Add new wish
-    current_wishes.append(session['user'])
-    df.loc[mask, 'wished_by'] = ','.join(current_wishes)
-    
-    df.to_csv(EVENTS_FILE, index=False)
-    return jsonify({'status': 'success'})
+    return jsonify({'error': 'Already wished to attend this event'}), 400
 
 @app.route('/delete_event', methods=['POST'])
 def delete_event():
@@ -205,7 +196,7 @@ def group_availability():
     df = df[(df['hour'] >= START_HOUR) & (df['hour'] <= END_HOUR)]
     
     total_users = len(df['user'].unique())
-    group_avail = df.groupby('time')['available'].agg(['sum', 'count']).reset_index()
+    group_avail = df.grouspby('time')['available'].agg(['sum', 'count']).reset_index()
     group_avail['percentage'] = (group_avail['sum'] / group_avail['count']) * 100
     
     return jsonify(group_avail.to_dict(orient='records'))

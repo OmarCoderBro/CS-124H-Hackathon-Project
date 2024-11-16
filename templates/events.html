@@ -4,74 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TimeSync - Events</title>
-    <style>
-        .event-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .event-form {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .nav-menu {
-            background-color: #f0f0f0;
-            padding: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .nav-link {
-            padding: 10px 20px;
-            text-decoration: none;
-            color: black;
-            margin: 0 10px;
-        }
-        .nav-link:hover {
-            background-color: #e0e0e0;
-            border-radius: 4px;
-        }
-        .event-item {
-            background: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .delete-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .delete-btn:hover {
-            background: #cc0000;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    <div class="nav-menu">
-        <a href="/" class="nav-link">Calendar</a>
-        <a href="/events" class="nav-link">Events</a>
-        <a href="/logout" class="nav-link">Logout</a>
-    </div>
+<body id="fullpage">
+    <nav>
+        <ul class="navlist">
+            <li class="listelement"><a href="/" class="navlink">Calendar</a></li>
+            <li class="listelement"><a href="/events" class="navlink">Events</a></li>
+            <li class="listelement"><a href="/logout" class="navlink">Logout</a></li>
+        </ul>
+    </nav>
 
     <div class="event-container">
         <h1>Create Event</h1>
@@ -100,7 +42,6 @@
             <h2>Events</h2>
         </div>
     </div>
-
     <script>
         const currentUser = '{{ user }}';
         function populateTimeDropdowns() {
@@ -157,12 +98,22 @@ function loadEvents() {
             events.forEach(event => {
                 const eventDiv = document.createElement('div');
                 eventDiv.className = 'event-item';
+                
+                // Convert wished_by to array if it exists, or empty array if it doesn't
+                const wishList = event.wished_by ? 
+                    event.wished_by.split(',').filter(wish => wish.trim() !== '') : 
+                    [];
+                
                 eventDiv.innerHTML = `
                     <div>
                         <h3>${event.name}</h3>
                         <p>Start Time: ${event.start_time.toString().padStart(2, '0')}:00</p>
                         <p>End Time: ${event.end_time.toString().padStart(2, '0')}:00</p>
                         <p>Created by: ${event.creator}</p>
+                        ${wishList.length > 0 ? 
+                            `<p>Wished by: ${wishList.join(', ')}</p>` : 
+                            '<p>No wishes yet</p>'
+                        }
                     </div>
                     <div class="button-group">
                         ${event.creator !== currentUser ? 
