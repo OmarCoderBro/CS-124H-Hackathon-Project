@@ -92,108 +92,23 @@
 .time-slot:hover {
     opacity: 0.8;
 }
-#infosection {
-    width: 700px;
-    margin-left: 100px;
-    margin-top: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 100px;
+.event-item {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-#smallheading {
-    font-size: 14px;
-}
-#infofrontparagraph {
-    font-size: 14px;
-    width: 700px;
-    font-weight: none;
-    text-align: center;
-}
-#tryoutbutton {
-    width: 200px;
-    height: 100px;;
-    margin-top: 50px;
-    border-radius: 10px;
-    font-size: 20px;
-    font-family: "Source Code Pro";
-}
-#tryoutbutton:hover {
-    background-color: rgb(107, 141, 227);
-    box-shadow: 4px 4px 4px black;
-    transition-duration: .5s;
-    cursor: pointer;
-}
-#bottomnavbar {
-    height: 400px;
-    width: 100%;
-    background-color: rgb(34, 68, 122);
+.delete-btn {
+    background: #ff4444;
     color: white;
-}
-.bottomnavbarcontent {
-    display: flex;
-}
-.bnavbarcol1 {
-    margin-top: 20px;
-    margin-left: 100px;
-}
-#requestschedulebutton {
-    width: 200px;
-    height: 60;
-    margin-top: 40px;
-    font-family: "Source Code Pro";
-    border-radius: 10px;
-}
-#requestschedulebutton:hover {
-    background-color: white;
-    transition-duration: .4s;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
     cursor: pointer;
+    margin-top: 10px;
 }
-
-#backgroundsection {
-    height: 700px;
-    background-color: rgb(107, 141, 227);
-    display: flex;
-}
-#instructionsectioncard {
-    width: 470px;
-    height: 600px;
-    margin-top: 50px;
-    background-color: white;
-    border-radius: 20px;
-    border-style: solid;
-    border-width: 4px;
-    align-items: center;
-    font-size: 15px;
-}
-#instructionsectioncard:hover {
-    border-width: 15px;
-    transition-duration: .5s;
-}
-#instructioncardheading {
-    margin-left: 70px;
-    font-size: 34px;
-    margin-bottom: 40px;
-}
-#transporttotimesbutton {
-    width: 200px;
-    height: 60px;
-    font-family: "Source Code Pro";
-    border-radius: 10px;
-    margin-top: 6px;
-    margin-left: 130px;
-    font-weight: bold;
-}
-#transporttotimesbutton:hover {
-    cursor: pointer;
-    background-color: rgb(107, 141, 227);
-    transition-duration: .5s;
-}
-#logotext {
-    color: rgb(107, 141, 227);
-}
-#logocardimg {
-    width: 270px;
-    height: 200px;
-    margin-left: 90px;
+.delete-btn:hover {
+    background: #cc0000;
+>>>>>>> d16e6bf82d502df0881ba882aaf242ee965336e7
 }
