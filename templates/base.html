@@ -3,52 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/styles2.css">
 </head>
     <body id = "fullpage">
         <div class = "navbar">
             <ul class = "navlist">
-                <li class = "listelement"><a class = "navlink" href="">Home</a></li>
-                <li class = "listelement"><a class = "navlink" href="">Calendar</a></li>
-                <li class = "listelement"><a class = "navlink" href="">Events</a></li>
-                <li class = "listelement"><a class = "navlink" href="">Log-Out</a></li>
-                <img id = "logonavbar" src = "../static/calendar.jpg" alt = "logo"></img>
+                <li class = "listelement"><a class = "navlink" href="/home">Home</a></li>
+                <li class = "listelement"><a class = "navlink" href="/calendar">Calendar</a></li>
+                <li class = "listelement"><a class = "navlink" href="/events">Events</a></li>
+                <div id = "rightnavbar">
+                    <img id = "logonavbar" src = "../static/calendar2.png" alt = "logo"></img>
+                    <li class = "listelement"><a class = "navlink" href="/login">Log-Out</a></li>
+                </div>
             </ul>
         </div>
         <div id = "calendarsection">
             <div id = "infosection">
-                <h1>Welcome to <span id = "logotext">Alignify!</span></h1>
+                <h1 id = "homepagemainheading">Welcome back to <span id = "logotext">ALIGNIFY!</span>, {{user}} </h1>
                 <h1 id = "smallheading">Matching Schedules, and making time</h1>
                 <p1 id = "infofrontparagraph">Our app is a powerful and intuitive scheduling platform designed to simplify the process of organizing events and meetings by dynamically linking individual and group schedules. The app allows users to create detailed schedules with customizable time blocks, event descriptions, and priority settings. By leveraging advanced algorithms, it can analyze multiple schedules to identify optimal overlapping time slots that suit the availability of all participants. This functionality is especially useful for coordinating team meetings, study groups, or collaborative projects where aligning different calendars can be challenging. Additionally, the app provides integration with popular calendar tools like Google Calendar, Microsoft Outlook, and Apple Calendar, ensuring seamless updates and notifications. Users can also set preferences for specific time zones, recurring events, and buffer times between engagements, enhancing the personalization and efficiency of the scheduling process. Whether planning a one-on-one coffee chat or a large-scale event, the app reduces the back-and-forth communication by instantly proposing the best time for all parties involved, saving time and minimizing scheduling conflicts.</p1>
-                <button id = "tryoutbutton">Try out this technology</button>
+                <button id = "tryoutbutton" onclick = "location.href='#backgroundsection'">TRY OUT THIS TECHNOLOGY</button>
             </div>
             <div id = "instructionsection">
                 <div id = "instructionsectioncard">
                     <img id = "logocardimg" src = "../static/calendar.jpg" alt = "image">
                     <h1 id = "instructioncardheading">What is <span id = "logotext">Alignify</span>?</h1>
-                    <ul>
+                    <ul id = "frontinstructionlist">
                         <li>Simplify scheduling by linking multiple calendars and schedules to find the best times for events.</li>
                         <li>Analyze and align schedules across multiple participants.</li>
                         <li>Suggest optimal meeting times automatically.</li>
                         <li>Support for recurring events and custom time preferences.</li>
                         <li>Create customizable schedules with time blocks, descriptions, and priorities.</li>
                     </ul>
-                    <button id = "transporttotimesbutton">Make a schedule now!</button>
+                    <button id = "transporttotimesbutton" onclick = "location.href='#backgroundsection'">Make a schedule now!</button>
                 </div>
             </div>
         </div>
         <div id = "backgroundsection">
-            <div id = "inputinstructions">
-                <h1></h1>
-            </div>
-            <div id = "calendarcreation">
-                <h1> Create your calendar here!</h1>
-                <div id = "timeselection">
-                    <label  id = "smallsubheading" for = "selectstarttime">Choose which time you want your schedule to start.</label><br>
-                    <select id = "selectstarttime"></select>
-                    <label  id = "smallsubheading" for = "selectendtime">Choose which time you want your schedule to end.</label><br>
-                    <select id = "selectendtime"></select>
+            <h1 id = "backgroundsectionopenerheading">Follow the instructions below so you could make a schedule and start meeting with others hassle free. We do the scheduling for you! </h1>
+            <div id = "rowcontent">
+                <div id = "inputinstructions">
+                    <h1 id = "instructionsectionheading">How to make a schedule</h1>
+                    <ui id = "instructionlist">
+                        <li>Choose a start time, or a time you want your schedule to start.</li>
+                        <li>Choose an end time, or a time you want your schedule to end.</li>
+                        <li>Click the button under the dropdowns, to be able to get a personalized schedule.</li>
+                        <li>You will receive a schedule in which you can filter availability, and compare with other users' schedules!</li>
+                        <li>There is also an event section which allows you to create and keep track of different events!</li>
+                    </ui>
                 </div>
-                <button id = "requestschedulebutton">Submit a request for a calendar with these times!</button>
+                <div id = "calendarcreation">
+                    <h1> Create your calendar here!</h1>
+                    <div id = "timeselection">
+                        <label  id = "smallsubheading" for = "selectstarttime">Choose which time you want your schedule to start.</label><br>
+                        <select id = "selectstarttime"></select>
+                        <label  id = "smallsubheading" for = "selectendtime">Choose which time you want your schedule to end.</label><br>
+                        <select id = "selectendtime"></select>
+                    </div>
+                    <button onclick = "location.href = '/calendar'" id = "requestschedulebutton">Submit a request for a calendar with these times!</button>
+                </div>
             </div>
         </div>
         <div id = "bottomnavbar">
@@ -77,7 +90,7 @@
                 <div class = "bnavbarcol1">
                     <p id = "smallsubheading">Follow Us</p>
                     <div>
-                        <img id = "socialmedialogos" src = "../static/csv,images/set-of-social-media-icon-in-round-bakground-free-vector-removebg-preview-removebg-preview.png" alt = "socialmedialogos">
+                        <img id = "socialmedialogos" src = "../static/socialmedia.png" alt = "socialmedialogos">
                     </div>
                 </div>
             </div>

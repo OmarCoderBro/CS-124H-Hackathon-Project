@@ -3,6 +3,40 @@
 <head>
     <title>Calendar</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+        #fullbody {
+            font-family: "Source Code Pro";
+        }
+        .navlist {
+        list-style-type: none;
+        padding: none;
+        margin: none;
+        background-color: rgb(34, 68, 122);
+        color: white;
+        overflow: hidden;
+        }
+        .listelement {
+        display: inline;
+        float: left;
+        transition-duration: .5s;
+        }
+        .navlink {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 30px 10px;
+        text-decoration: none;
+        }
+        .listelement:hover {
+        background-color: black;
+        }
+        #logonavbar {
+        height: 80px;
+        width: 120px;
+        }
+        #rightnavbar {
+        margin-left: 1200px;
+        }
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -46,22 +80,30 @@
     </style>
 </head>
 <body>
-    <div class="nav-menu">
-        <a href="/" class="nav-link">Calendar</a>
-        <a href="/events" class="nav-link">Events</a>
-        <a href="/logout" class="nav-link">Logout</a>
-    </div>
-    
-    <h1>Welcome, {{ user }}!</h1>
-    
-    <div id="personal-calendar">
-        <h2>Your Availability</h2>
-        <div class="calendar-grid" id="personal-grid"></div>
-    </div>
+    <div id = "fullbody">
+        <div class = "navbar">
+            <ul class = "navlist">
+                <li class = "listelement"><a class = "navlink" href="/home">Home</a></li>
+                <li class = "listelement"><a class = "navlink" href="/calendar">Calendar</a></li>
+                <li class = "listelement"><a class = "navlink" href="/events">Events</a></li>
+                <div id = "rightnavbar">
+                    <img id = "logonavbar" src = "../static/calendar2.png" alt = "logo"></img>
+                    <li class = "listelement"><a class = "navlink" href="/login">Log-Out</a></li>
+                </div>
+            </ul>
+        </div>
+        
+        <h1>Welcome, {{ user }}!</h1>
+        
+        <div id="personal-calendar">
+            <h2>Your Availability</h2>
+            <div class="calendar-grid" id="personal-grid"></div>
+        </div>
 
-    <div id="group-calendar">
-        <h2>Group Availability</h2>
-        <div class="calendar-grid" id="group-grid"></div>
+        <div id="group-calendar">
+            <h2>Group Availability</h2>
+            <div class="calendar-grid" id="group-grid"></div>
+        </div>
     </div>
 
     <script>

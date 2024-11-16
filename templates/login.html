@@ -4,15 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+        #fullbody {
+            font-family: "Source Code Pro";
+            background-color: white;
+            width: 800px;
+            height: 500px;
+            align-items: center;
+            text-align: center;
+            margin-top: 100px;
+            padding-top: 50px;
+            border-radius: 50px;
+            border-style: solid;
+            border-width: 5px;
+            border-color: black;
+            margin-left: 330px;
+        }
+        #fullbody:hover {
+            border-width: 10px;
+            transition-duration: .2s;
+            cursor: pointer;
+        }
+        #logincolumn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 100px;
+        }
+        #submitbutton {
+            width: 200px;
+            height: 40px;
+            margin-top: 40px;
+            border-radius: 20px;
+            font-family: "Source Code Pro";
+        }
+        #submitbutton:hover {
+            background-color: gray;
+            cursor: pointer;
+            transition-duration: .5s;
+        }
+        #loginheader {
+        }
+        #username {
+            height: 40px;
+            width: 200px;
+            margin-bottom: 50px;
+            font-size: 15px;
+        }
+        #password {
+            height: 40px;
+            width: 200px;
+            margin-bottom: 50px;
+        }
+        #logotext {
+            color: rgb(107, 141, 227);
+        }
+    </style>
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="/login" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
+    <div id = "fullbody">
+        <h1 id = "loginheader">Welecome Back To <span id = "logotext">Alignify!</span></h1>
+        <form action="/login" method="post">
+            <div id = "logincolumn">
+                <div id = "usernameinput">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div id = "passwordinput">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button id = "submitbutton" type="submit">LOGIN</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

@@ -5,6 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TimeSync - Events</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+        #fullbody {
+            font-family: "Source Code Pro";
+        }
+        .navlist {
+            list-style-type: none;
+            padding: none;
+            margin: none;
+            background-color: rgb(34, 68, 122);
+            color: white;
+            overflow: hidden;
+        }
+        .listelement {
+            display: inline;
+            float: left;
+            transition-duration: .5s;
+        }
+
+        .navlink {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 30px 10px;
+            text-decoration: none;
+        }
+        .listelement:hover {
+            background-color: black;
+        }
+        #logonavbar {
+        height: 80px;
+        width: 120px;
+        }
+        #rightnavbar {
+        margin-left: 1200px;
+        }
         .event-container {
             max-width: 800px;
             margin: 20px auto;
@@ -29,22 +64,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        .nav-menu {
-            background-color: #f0f0f0;
-            padding: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .nav-link {
-            padding: 10px 20px;
-            text-decoration: none;
-            color: black;
-            margin: 0 10px;
-        }
-        .nav-link:hover {
-            background-color: #e0e0e0;
-            border-radius: 4px;
-        }
         .event-item {
             background: white;
             padding: 15px;
@@ -67,39 +86,46 @@
     </style>
 </head>
 <body>
-    <div class="nav-menu">
-        <a href="/" class="nav-link">Calendar</a>
-        <a href="/events" class="nav-link">Events</a>
-        <a href="/logout" class="nav-link">Logout</a>
-    </div>
-
-    <div class="event-container">
-        <h1>Create Event</h1>
-        <div class="event-form">
-            <form id="eventForm">
-                <div class="form-group">
-                    <label for="eventName">Event Name:</label>
-                    <input type="text" id="eventName" required>
+    <div id = "fullbody">
+        <div class = "navbar">
+            <ul class = "navlist">
+                <li class = "listelement"><a class = "navlink" href="/home">Home</a></li>
+                <li class = "listelement"><a class = "navlink" href="/calendar">Calendar</a></li>
+                <li class = "listelement"><a class = "navlink" href="/events">Events</a></li>
+                <div id = "rightnavbar">
+                    <img id = "logonavbar" src = "../static/calendar2.png" alt = "logo"></img>
+                    <li class = "listelement"><a class = "navlink" href="/login">Log-Out</a></li>
                 </div>
+            </ul>
+        </div>
+        <div class="event-container">
+            <h1>Create Event</h1>
+            <div class="event-form">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventName">Event Name:</label>
+                        <input type="text" id="eventName" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="selectstarttime">Start Time:</label>
-                    <select id="selectstarttime"></select>
-                </div>
+                    <div class="form-group">
+                        <label for="selectstarttime">Start Time:</label>
+                        <select id="selectstarttime"></select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="selectendtime">End Time:</label>
-                    <select id="selectendtime"></select>
-                </div>
+                    <div class="form-group">
+                        <label for="selectendtime">End Time:</label>
+                        <select id="selectendtime"></select>
+                    </div>
 
-                <button type="submit">Create Event</button>
-            </form>
+                    <button type="submit">Create Event</button>
+                </form>
+            </div>
         </div>
 
-        <div id="eventList">
-            <h2>Your Events</h2>
+            <div id="eventList">
+                <h2>Your Events</h2>
+            </div>
         </div>
-    </div>
 
     <script>
         function populateTimeDropdowns() {

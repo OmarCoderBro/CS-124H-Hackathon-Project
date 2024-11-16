@@ -61,6 +61,7 @@ def get_events():
     user_events = df[df['creator'] == session['user']]
     return jsonify(user_events.to_dict(orient='records'))
 
+
 @app.route('/delete_event', methods=['POST'])
 def delete_event():
     if 'user' not in session:
@@ -97,21 +98,24 @@ def login():
         
         if not user.empty:
             session['user'] = username
-            return redirect('/')
+            return redirect('/home')
         return "Invalid credentials"
     
     return render_template('login.html')
 
-@app.route('/logout')
-def logout():
-    session.pop('user', None)
+@app.route('/')
+def firstlogin():
     return redirect('/login')
 
-@app.route('/')
+@app.route('/calendar')
+def return_calendar():
+    return render_template('calendar.html', user = session["user"])
+
+@app.route('/home')
 def home():
     if 'user' not in session:
         return redirect('/login')
-    return render_template('calendar.html', user=session['user'])
+    return render_template('base.html', user=session['user'])
 
 @app.route('/availability', methods=['GET', 'POST'])
 def availability():
