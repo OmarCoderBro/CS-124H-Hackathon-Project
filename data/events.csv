@@ -1,6 +1,2 @@
 name,date,start_time,end_time,creator,wished_by
-TEST PEAK,2024-11-17,8,15,User2,"User2,User1"
-name,start_time,end_time,creator,wished_by
-Hello,0,0,User1,User1
-cs 124 HACKATHON!,10,19,User1,User1
-CS 124,11,12,User1,User1
+workshop,2024-11-17,12,14,User2,"User2,User1"

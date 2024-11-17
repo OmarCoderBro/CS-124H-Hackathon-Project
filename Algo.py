@@ -25,7 +25,7 @@ def get_user_availability(user: str, availability_df: pd.DataFrame) -> dict:
         print(f"Error getting availability for {user}: {str(e)}")
         return {}
 
-def find_best_time(event: pd.Series, availability_df: pd.DataFrame) -> dict:
+def find_best_time(event: pd.Series, availability_df: pd.DataFrame, start_hour: int, end_hour: int) -> dict:
     try:
         wished_users = [u.strip() for u in str(event['wished_by']).split(',') if u.strip()]
         print(f"Processing event '{event['name']}' for users: {wished_users}")
@@ -88,23 +88,27 @@ def find_best_time(event: pd.Series, availability_df: pd.DataFrame) -> dict:
         print(f"Error finding best time: {str(e)}")
         return None
 
-def schedule_events(events_df: pd.DataFrame, availability_df: pd.DataFrame) -> list:
+def schedule_events(events_df: pd.DataFrame, availability_df: pd.DataFrame, 
+                   start_hour: int, end_hour: int) -> list:
     try:
         scheduled_events = []
         print(f"Processing {len(events_df)} events")
-
-        for _, event in events_df.iterrows():
-            if pd.isna(event['wished_by']) or not str(event['wished_by']).strip():
-                continue
-
+        
+        for idx, event in events_df.iterrows():
+            print(f"Processing event {idx}: {event['name']}")
+            print(f"Wished by: {event['wished_by']}")
+            
+            # Changed this line to only pass the required arguments
             best_slot = find_best_time(event, availability_df)
             if best_slot:
+                print(f"Found slot for event {event['name']}: {best_slot}")
                 scheduled_events.append(best_slot)
-                print(f"Successfully scheduled: {event['name']}")
             else:
-                print(f"Could not find suitable time for: {event['name']}")
-
-        return sorted(scheduled_events, key=lambda x: x['attendance_percentage'], reverse=True)
+                print(f"No suitable slot found for event {event['name']}")
+        
+        print(f"Total scheduled events: {len(scheduled_events)}")
+        scheduled_events.sort(key=lambda x: x['attendance_percentage'], reverse=True)
+        return scheduled_events
     except Exception as e:
-        print(f"Scheduling error: {str(e)}")
+        print(f"Error scheduling events: {str(e)}")
         return []

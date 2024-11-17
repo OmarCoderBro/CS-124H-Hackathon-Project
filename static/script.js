@@ -25,19 +25,43 @@ fetch('/config')
 document.getElementById("requestschedulebutton").addEventListener("click", function() {
     const starttime = document.getElementById("selectstarttime").value;
     const endtime = document.getElementById("selectendtime").value;
-    console.log("End time is " + endtime);
+    
+    const start_hour = convertTimeToHour(starttime);
+    const end_hour = convertTimeToHour(endtime);
+
+    fetch('/update_config', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            start_hour: start_hour,
+            end_hour: end_hour
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        window.location.href = '/calendar';
+    });
 });
 
-const clickSound = new Audio('../static/mouseclick.mp3');
-
-  // Add event listener to the button
-document.getElementById('tryoutbutton').addEventListener('click', () => {
-    clickSound.play(); // Play the sound
-});
-document.getElementById('transporttotimesbutton').addEventListener('click', () => {
-    clickSound.play(); // Play the sound
-});
-document.getElementById('requestschedulebutton').addEventListener('click', () => {
-    clickSound.play(); // Play the sound
-});
-
+function convertTimeToHour(timeStr) {
+    // Split the time string into time and period (AM/PM)
+    const [timeComponent, period] = timeStr.split(/(?=[AP]M)/);
+    let [hours] = timeComponent.split(':').map(Number);
+    
+    // Handle PM times
+    if (period === 'PM') {
+        if (hours !== 12) {
+            hours += 12;
+        }
+    } 
+    // Handle AM times
+    else if (period === 'AM') {
+        if (hours === 12) {
+            hours = 0;
+        }
+    }
+    
+    return hours;
+}
