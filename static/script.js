@@ -48,3 +48,17 @@ selectendtime.addEventListener("input", () => {
     const endtime = document.getElementById("selectendtime").value;
     console.log("End time is " + endtime);
 });
+
+const clickSound = new Audio('../static/mouseclick.mp3');
+
+  // Add event listener to the button
+document.getElementById('tryoutbutton').addEventListener('click', () => {
+    clickSound.play(); // Play the sound
+});
+document.getElementById('transporttotimesbutton').addEventListener('click', () => {
+    clickSound.play(); // Play the sound
+});
+document.getElementById('requestschedulebutton').addEventListener('click', () => {
+    clickSound.play(); // Play the sound
+});
+
