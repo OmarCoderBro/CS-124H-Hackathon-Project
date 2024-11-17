@@ -7,19 +7,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
         #fullbody {
+            background-color: white;
+            height: 700px;
+        }
+        #cardbody {
             font-family: "Source Code Pro";
             background-color: white;
             width: 800px;
             height: 500px;
             align-items: center;
             text-align: center;
-            margin-top: 100px;
             padding-top: 50px;
             border-radius: 50px;
             border-style: solid;
             border-width: 5px;
             border-color: black;
             margin-left: 330px;
+            margin-top: 100px;
         }
         #fullbody:hover {
             border-width: 10px;
@@ -64,20 +68,22 @@
 </head>
 <body>
     <div id = "fullbody">
-        <h1 id = "loginheader">Welecome Back To <span id = "logotext">Alignify!</span></h1>
-        <form action="/login" method="post">
-            <div id = "logincolumn">
-                <div id = "usernameinput">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required>
+        <div id = "cardbody">
+            <h1 id = "loginheader">Welecome Back To <span id = "logotext">Alignify!</span></h1>
+            <form action="/login" method="post">
+                <div id = "logincolumn">
+                    <div id = "usernameinput">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div id = "passwordinput">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button id = "submitbutton" type="submit">LOGIN</button>
                 </div>
-                <div id = "passwordinput">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button id = "submitbutton" type="submit">LOGIN</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </body>
 </html>
