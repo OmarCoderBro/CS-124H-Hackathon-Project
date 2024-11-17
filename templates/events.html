@@ -6,9 +6,11 @@
     <title>TimeSync - Events</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+        
         #fullbody {
             font-family: "Source Code Pro";
         }
+        
         .navlist {
             list-style-type: none;
             padding: none;
@@ -17,12 +19,13 @@
             color: white;
             overflow: hidden;
         }
+        
         .listelement {
             display: inline;
             float: left;
             transition-duration: .5s;
         }
-
+        
         .navlink {
             display: block;
             color: white;
@@ -30,40 +33,52 @@
             padding: 30px 10px;
             text-decoration: none;
         }
+        
         .listelement:hover {
             background-color: black;
         }
+        
         #logonavbar {
-        height: 80px;
-        width: 120px;
+            height: 80px;
+            width: 120px;
         }
+        
         #rightnavbar {
-        margin-left: 1200px;
+            margin-left: 1200px;
         }
+        
         .event-container {
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
         }
+        
         .event-form {
             background: #f5f5f5;
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
+        
         .form-group {
             margin-bottom: 15px;
         }
+        
         .form-group label {
             display: block;
             margin-bottom: 5px;
         }
-        .form-group input, .form-group select {
+        
+        .form-group input, 
+        .form-group select,
+        .form-group input[type="date"] {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-family: "Source Code Pro";
         }
+        
         .event-item {
             background: white;
             padding: 15px;
@@ -71,6 +86,7 @@
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        
         .delete-btn {
             background: #ff4444;
             color: white;
@@ -80,24 +96,27 @@
             cursor: pointer;
             margin-top: 10px;
         }
+        
         .delete-btn:hover {
             background: #cc0000;
         }
     </style>
 </head>
 <body>
-    <div id = "fullbody">
-        <div class = "navbar">
-            <ul class = "navlist">
-                <li class = "listelement"><a class = "navlink" href="/home">Home</a></li>
-                <li class = "listelement"><a class = "navlink" href="/calendar">Calendar</a></li>
-                <li class = "listelement"><a class = "navlink" href="/events">Events</a></li>
-                <div id = "rightnavbar">
-                    <img id = "logonavbar" src = "../static/calendar2.png" alt = "logo"></img>
-                    <li class = "listelement"><a class = "navlink" href="/login">Log-Out</a></li>
+    <div id="fullbody">
+        <div class="navbar">
+            <ul class="navlist">
+                <li class="listelement"><a class="navlink" href="/home">Home</a></li>
+                <li class="listelement"><a class="navlink" href="/calendar">Calendar</a></li>
+                <li class="listelement"><a class="navlink" href="/events">Events</a></li>
+                <li class="listelement"><a class="navlink" href="/generate_schedule">Generate Schedule</a></li>
+                <div id="rightnavbar">
+                    <img id="logonavbar" src="../static/calendar2.png" alt="logo">
+                    <li class="listelement"><a class="navlink" href="/login">Log-Out</a></li>
                 </div>
             </ul>
         </div>
+
         <div class="event-container">
             <h1>Create Event</h1>
             <div class="event-form">
@@ -106,33 +125,33 @@
                         <label for="eventName">Event Name:</label>
                         <input type="text" id="eventName" required>
                     </div>
-
+                    <div class="form-group">
+                        <label for="eventDate">Date:</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
                     <div class="form-group">
                         <label for="selectstarttime">Start Time:</label>
                         <select id="selectstarttime"></select>
                     </div>
-
                     <div class="form-group">
                         <label for="selectendtime">End Time:</label>
                         <select id="selectendtime"></select>
                     </div>
-
                     <button type="submit">Create Event</button>
                 </form>
             </div>
         </div>
-
-            <div id="eventList">
-                <h2>Your Events</h2>
-            </div>
+        <div id="eventList">
+            <h2>Your Events</h2>
         </div>
+    </div>
 
     <script>
         const currentUser = '{{ user }}';
+
         function populateTimeDropdowns() {
             const startSelect = document.getElementById('selectstarttime');
             const endSelect = document.getElementById('selectendtime');
-            
             startSelect.innerHTML = '';
             endSelect.innerHTML = '';
             
@@ -145,106 +164,103 @@
             }
         }
 
-        function deleteEvent(name, start_time, end_time) {
-    if (confirm('Are you sure you want to delete this event?')) {
-        fetch('/delete_event', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                start_time: start_time,
-                end_time: end_time
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.status === 'success') {
-                loadEvents();
+        function deleteEvent(name, date, start_time, end_time) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                fetch('/delete_event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        date: date,
+                        start_time: start_time,
+                        end_time: end_time
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        loadEvents();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-}
-
-function loadEvents() {
-    fetch('/get_events')
-        .then(response => response.json())
-        .then(events => {
-            const eventList = document.getElementById('eventList');
-            eventList.innerHTML = '<h2>Events</h2>';
-            
-            if (events.length === 0) {
-                eventList.innerHTML += '<p>No events created yet</p>';
-                return;
-            }
-            
-            events.forEach(event => {
-                const eventDiv = document.createElement('div');
-                eventDiv.className = 'event-item';
-                
-                // Convert wished_by to array if it exists, or empty array if it doesn't
-                const wishList = event.wished_by ? 
-                    event.wished_by.split(',').filter(wish => wish.trim() !== '') : 
-                    [];
-                
-                eventDiv.innerHTML = `
-                    <div>
-                        <h3>${event.name}</h3>
-                        <p>Start Time: ${event.start_time.toString().padStart(2, '0')}:00</p>
-                        <p>End Time: ${event.end_time.toString().padStart(2, '0')}:00</p>
-                        <p>Created by: ${event.creator}</p>
-                        ${wishList.length > 0 ? 
-                            `<p>Wished by: ${wishList.join(', ')}</p>` : 
-                            '<p>No wishes yet</p>'
-                        }
-                    </div>
-                    <div class="button-group">
-                        ${event.creator !== currentUser ? 
-                            `<button onclick="wishToAttend('${event.name}', ${event.start_time}, ${event.end_time})" 
-                                    class="wish-btn">Wish to Attend</button>` : ''
-                        }
-                        ${event.creator === currentUser ? 
-                            `<button onclick="deleteEvent('${event.name}', ${event.start_time}, ${event.end_time})" 
-                                    class="delete-btn">Delete</button>` : ''
-                        }
-                    </div>
-                `;
-                eventList.appendChild(eventDiv);
-            });
-        });
-}
-function wishToAttend(name, start_time, end_time) {
-    fetch('/wish_to_attend', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            name: name,
-            start_time: start_time,
-            end_time: end_time
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert('Successfully added to wish list!');
-        } else if (data.error) {
-            alert(data.error);
         }
-    })
-    .catch(error => console.error('Error:', error));
-}
+
+        function loadEvents() {
+            fetch('/get_events')
+                .then(response => response.json())
+                .then(events => {
+                    const eventList = document.getElementById('eventList');
+                    eventList.innerHTML = '<h2>Events</h2>';
+                    
+                    if (events.length === 0) {
+                        eventList.innerHTML += '<p>No events created yet</p>';
+                        return;
+                    }
+
+                    events.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.className = 'event-item';
+                        const wishList = event.wished_by ? event.wished_by.split(',').filter(wish => wish.trim() !== '') : [];
+                        
+                        eventDiv.innerHTML = `
+                            <div>
+                                <h3>${event.name}</h3>
+                                <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
+                                <p>Start Time: ${event.start_time.toString().padStart(2, '0')}:00</p>
+                                <p>End Time: ${event.end_time.toString().padStart(2, '0')}:00</p>
+                                <p>Created by: ${event.creator}</p>
+                                ${wishList.length > 0 ? `<p>Wished by: ${wishList.join(', ')}</p>` : '<p>No wishes yet</p>'}
+                            </div>
+                            <div class="button-group">
+                                ${event.creator !== currentUser ? 
+                                    `<button onclick="wishToAttend('${event.name}', '${event.date}', ${event.start_time}, ${event.end_time})" class="wish-btn">Wish to Attend</button>` : ''}
+                                ${event.creator === currentUser ? 
+                                    `<button onclick="deleteEvent('${event.name}', '${event.date}', ${event.start_time}, ${event.end_time})" class="delete-btn">Delete</button>` : ''}
+                            </div>
+                        `;
+                        eventList.appendChild(eventDiv);
+                    });
+                });
+        }
+
+        function wishToAttend(name, date, start_time, end_time) {
+            fetch('/wish_to_attend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    date: date,
+                    start_time: start_time,
+                    end_time: end_time
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Successfully added to wish list!');
+                    loadEvents();
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
         document.getElementById('eventForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const formData = {
                 name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
                 start_time: document.getElementById('selectstarttime').value,
                 end_time: document.getElementById('selectendtime').value
             };
-            
+
             fetch('/events', {
                 method: 'POST',
                 headers: {

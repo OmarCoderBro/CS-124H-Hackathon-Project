@@ -1,37 +1,110 @@
 import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta
 
-def scheduleMix(schedules: list[np.ndarray], group: list[int]) -> list[np.ndarray]: 
-    return np.sum(schedules[group], axis = 0)
+def get_user_availability(user: str, availability_df: pd.DataFrame) -> dict:
+    try:
+        user_data = availability_df[
+            (availability_df['user'] == user) & 
+            (availability_df['available'] == 1)
+        ]
+        
+        available_slots = {}
+        for _, row in user_data.iterrows():
+            dt = pd.to_datetime(row['time'])
+            date = dt.date()
+            hour = dt.hour
+            
+            if date not in available_slots:
+                available_slots[date] = set()
+            available_slots[date].add(hour)
+            
+        print(f"User {user} availability: {available_slots}")
+        return available_slots
+    except Exception as e:
+        print(f"Error getting availability for {user}: {str(e)}")
+        return {}
 
-class event:
-    scheduled = False
-    def __init__(self, eventLength: int, startTime : list, endTime: list, group: np.ndarray, everybodyNeeded: bool): #event length is stored in terms of how many time interval blocks it takes.
-        """ 
-        eventLength is stored as an int being the amount of time blocks it would take up
-        start Time and end time need some work as how they will be stored is still in question
-        """
-        self.eventLength = eventLength
-        self.startTime = startTime
-        self.endTime = endTime
-        self.group = group
-        self.everybodyNeeded = everybodyNeeded
+def find_best_time(event: pd.Series, availability_df: pd.DataFrame) -> dict:
+    try:
+        wished_users = [u.strip() for u in str(event['wished_by']).split(',') if u.strip()]
+        print(f"Processing event '{event['name']}' for users: {wished_users}")
 
-    def scheduleEvent(self, schedules: np.ndarray , time: list, cancelIfEverybodyNeeded: bool):
-        "Time is stored as a 3d cordinate being (day of the week, time of day by block #)"
-        if cancelIfEverybodyNeeded:
-            scheduleMix(schedules, self.group)
-            for idx in range(self.eventLength): # Asummes 1 means the spot is filled already
-                if not schedules[idx]:
-                    return
-        for member in self.group:
-            for idx in range(self.eventLength): 
-                if not schedules[(member,idx)]:
-                    schedules[(member,idx)] = 1
-        self.scheduled = True
+        user_availabilities = {}
+        for user in wished_users:
+            avail = get_user_availability(user, availability_df)
+            if avail:
+                user_availabilities[user] = avail
 
-def algorithe(events: event, schedules: np.ndarray):
-    eventMixes = [scheduleMix(schedules, oneEvent.group) for oneEvent in events]
-    everbodyEvents = [oneEvent for oneEvent in events if oneEvent.everybodyNeeded]
-    for everbodyEvent in everbodyEvents:
-        pass
+        if not user_availabilities:
+            print("No availability data found for any users")
+            return None
+
+        duration = int(float(event['end_time'])) - int(float(event['start_time']))
+        print(f"Event duration: {duration} hours")
+
+        best_slot = None
+        max_attendance = 0
+
+        # Get dates where at least one user is available
+        all_dates = set()
+        for user_avail in user_availabilities.values():
+            all_dates.update(user_avail.keys())
+
+        print(f"Checking dates: {all_dates}")
+        for date in all_dates:
+            # Check each possible starting hour
+            for start_hour in range(24 - duration):
+                end_hour = start_hour + duration
+                available_users = []
+
+                for user in wished_users:
+                    if user in user_availabilities:
+                        user_hours = user_availabilities[user].get(date, set())
+                        # Check if user is available for the entire duration
+                        hours_needed = set(range(start_hour, end_hour))
+                        if hours_needed.issubset(user_hours):
+                            available_users.append(user)
+
+                attendance = (len(available_users) / len(wished_users)) * 100
+                print(f"Time slot {start_hour}:00-{end_hour}:00 on {date}: {attendance}% attendance")
+                
+                if attendance > max_attendance:
+                    max_attendance = attendance
+                    best_slot = {
+                        'event_name': event['name'],
+                        'date': date.strftime('%Y-%m-%d'),
+                        'start_hour': start_hour,
+                        'end_hour': end_hour,
+                        'available_users': available_users,
+                        'attendance_percentage': attendance,
+                        'day_name': date.strftime('%A')
+                    }
+
+        if best_slot:
+            print(f"Found best slot: {best_slot}")
+        return best_slot
+    except Exception as e:
+        print(f"Error finding best time: {str(e)}")
+        return None
+
+def schedule_events(events_df: pd.DataFrame, availability_df: pd.DataFrame) -> list:
+    try:
+        scheduled_events = []
+        print(f"Processing {len(events_df)} events")
+
+        for _, event in events_df.iterrows():
+            if pd.isna(event['wished_by']) or not str(event['wished_by']).strip():
+                continue
+
+            best_slot = find_best_time(event, availability_df)
+            if best_slot:
+                scheduled_events.append(best_slot)
+                print(f"Successfully scheduled: {event['name']}")
+            else:
+                print(f"Could not find suitable time for: {event['name']}")
+
+        return sorted(scheduled_events, key=lambda x: x['attendance_percentage'], reverse=True)
+    except Exception as e:
+        print(f"Scheduling error: {str(e)}")
+        return []

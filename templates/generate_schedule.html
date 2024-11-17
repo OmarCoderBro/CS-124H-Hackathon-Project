@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/styles2.css">
+    <title>Generate Schedule - ALIGNIFY</title>
+</head>
+<body id="fullpage">
+    <div class="navbar">
+        <ul class="navlist">
+            <li class="listelement"><a class="navlink" href="/home">Home</a></li>
+            <li class="listelement"><a class="navlink" href="/calendar">Calendar</a></li>
+            <li class="listelement"><a class="navlink" href="/events">Events</a></li>
+            <li class="listelement"><a class="navlink" href="/generate_schedule">Generate Schedule</a></li>
+            <div id="rightnavbar">
+                <img id="logonavbar" src="../static/calendar2.png" alt="logo">
+                <li class="listelement"><a class="navlink" href="/login">Log-Out</a></li>
+            </div>
+        </ul>
+    </div>
+
+    <div class="schedule-container">
+        <div class="schedule-header">
+            <h1>Optimized Schedule Generator</h1>
+            <p>Find the best meeting times for your events</p>
+            <button onclick="generateOptimalSchedule()" class="generate-btn">Generate Schedule</button>
+        </div>
+        <div id="loading" style="display: none;">
+            <p>Generating optimal schedule...</p>
+        </div>
+        <div id="optimal-schedule"></div>
+    </div>
+
+    <style>
+        .schedule-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: "Source Code Pro";
+        }
+
+        .schedule-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .generate-btn {
+            background-color: rgb(34, 68, 122);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition-duration: .5s;
+            margin: 20px 0;
+        }
+
+        .generate-btn:hover {
+            background-color: black;
+        }
+
+        .schedule-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .event-title {
+            color: rgb(34, 68, 122);
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+        }
+
+        .event-details {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .attendance-high { 
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .attendance-medium { 
+            color: #f39c12;
+            font-weight: bold;
+        }
+        .attendance-low { 
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+
+    <script>
+        function generateOptimalSchedule() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('optimal-schedule');
+            
+            loading.style.display = 'block';
+            container.innerHTML = '';
+
+            fetch('/optimize_schedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                displaySchedule(data);
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                console.error('Error:', error);
+                container.innerHTML = '<p style="color: red;">Error generating schedule. Please try again.</p>';
+            });
+        }
+
+        function displaySchedule(scheduleData) {
+            const container = document.getElementById('optimal-schedule');
+            container.innerHTML = '';
+
+            if (!scheduleData || scheduleData.length === 0) {
+                container.innerHTML = '<p>No events to schedule or no suitable times found.</p>';
+                return;
+            }
+
+            scheduleData.forEach(event => {
+                const attendanceClass = getAttendanceClass(event.attendance_percentage);
+                
+                const scheduleCard = document.createElement('div');
+                scheduleCard.className = 'schedule-card';
+                scheduleCard.innerHTML = `
+                    <h3 class="event-title">${event.event_name}</h3>
+                    <div class="event-details">
+                        <p><strong>Date:</strong> ${event.day_name}, ${event.date}</p>
+                        <p><strong>Time:</strong> ${formatTime(event.start_hour)} - ${formatTime(event.end_hour)}</p>
+                        <p class="${attendanceClass}">
+                            <strong>Attendance:</strong> ${Math.round(event.attendance_percentage)}%
+                        </p>
+                        <p><strong>Available Attendees:</strong> ${event.available_users.join(', ')}</p>
+                    </div>
+                `;
+                container.appendChild(scheduleCard);
+            });
+        }
+
+        function formatTime(hour) {
+            return `${hour.toString().padStart(2, '0')}:00`;
+        }
+
+        function getAttendanceClass(percentage) {
+            if (percentage >= 75) return 'attendance-high';
+            if (percentage >= 50) return 'attendance-medium';
+            return 'attendance-low';
+        }
+
+        // Generate schedule on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateOptimalSchedule();
+        });
+    </script>
+</body>
+</html>

@@ -3,6 +3,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 import os
 from config import START_HOUR, END_HOUR, TIME_INTERVAL
+from Algo import get_user_availability, find_best_time, schedule_events
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -22,12 +24,14 @@ def initialize_data():
 
     try:
         events = pd.read_csv(EVENTS_FILE)
+        # Add date column if it doesn't exist
+        if 'date' not in events.columns:
+            events['date'] = ''
+            events.to_csv(EVENTS_FILE, index=False)
     except (FileNotFoundError, pd.errors.EmptyDataError):
-        events = pd.DataFrame(columns=['name', 'start_time', 'end_time', 'creator', 'wished_by'])
+        events = pd.DataFrame(columns=['name', 'date', 'start_time', 'end_time', 'creator', 'wished_by'])
         events.to_csv(EVENTS_FILE, index=False)
 
-# Modify the events route to handle POST
-@app.route('/events', methods=['GET', 'POST'])
 @app.route('/events', methods=['GET', 'POST'])
 def events():
     if 'user' not in session:
@@ -39,10 +43,11 @@ def events():
         
         new_event = {
             'name': data['name'],
+            'date': data['date'],
             'start_time': data['start_time'],
             'end_time': data['end_time'],
             'creator': session['user'],
-            'wished_by': session['user']  # Set the creator as the first person in wished_by
+            'wished_by': session['user']
         }
         
         df = pd.concat([df, pd.DataFrame([new_event])], ignore_index=True)
@@ -102,6 +107,33 @@ def wish_to_attend():
         df.to_csv(EVENTS_FILE, index=False)
         return jsonify({'status': 'success'})
     
+    return jsonify({'error': 'Already wished to attend this event'}), 400@app.route('/wish_to_attend', methods=['POST'])
+def wish_to_attend():
+    if 'user' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+        
+    data = request.json
+    df = pd.read_csv(EVENTS_FILE)
+    
+    mask = ((df['name'] == data['name']) & 
+            (df['date'] == data['date']) &
+            (df['start_time'] == float(data['start_time'])) & 
+            (df['end_time'] == float(data['end_time'])))
+    
+    if df[mask].empty:
+        return jsonify({'error': 'Event not found'}), 404
+        
+    event_idx = df[mask].index[0]
+    
+    current_wishes = str(df.at[event_idx, 'wished_by']).split(',') if pd.notna(df.at[event_idx, 'wished_by']) else []
+    current_wishes = [w.strip() for w in current_wishes if w.strip()]
+    
+    if session['user'] not in current_wishes:
+        current_wishes.append(session['user'])
+        df.at[event_idx, 'wished_by'] = ','.join(current_wishes)
+        df.to_csv(EVENTS_FILE, index=False)
+        return jsonify({'status': 'success'})
+    
     return jsonify({'error': 'Already wished to attend this event'}), 400
 
 
@@ -113,8 +145,8 @@ def delete_event():
     data = request.json
     df = pd.read_csv(EVENTS_FILE)
     
-    # Fixed deletion logic - remove matching rows
     mask = ~((df['name'] == data['name']) & 
+           (df['date'] == data['date']) &
            (df['start_time'] == float(data['start_time'])) & 
            (df['end_time'] == float(data['end_time'])) & 
            (df['creator'] == session['user']))
@@ -205,6 +237,85 @@ def group_availability():
     
     return jsonify(group_avail.to_dict(orient='records'))
 
+@app.route('/generate_schedule', methods=['GET', 'POST'])
+def generate_schedule_page():
+    if 'user' not in session:
+        return redirect('/login')
+    return render_template('generate_schedule.html', user=session['user'])
+
+@app.route('/update_config', methods=['POST'])
+def update_config():
+    if 'user' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+        
+    data = request.json
+    global START_HOUR, END_HOUR
+    
+    START_HOUR = int(data['start_hour'])
+    END_HOUR = int(data['end_hour'])
+    
+    # Update config.py file
+    with open('config.py', 'w') as f:
+        f.write(f'START_HOUR = {START_HOUR}\n')
+        f.write(f'END_HOUR = {END_HOUR}\n')
+        f.write('TIME_INTERVAL = 1')
+    
+    return jsonify({
+        'START_HOUR': START_HOUR,
+        'END_HOUR': END_HOUR
+    })
+@app.route('/optimize_schedule', methods=['POST'])
+def optimize_schedule():
+    if 'user' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    try:
+        events_df = pd.read_csv(EVENTS_FILE)
+        availability_df = pd.read_csv(AVAILABILITY_FILE)
+        
+        # Convert time column to datetime
+        availability_df['time'] = pd.to_datetime(availability_df['time'])
+        
+        if availability_df.empty:
+            return jsonify({'error': 'No availability data found'})
+            
+        # Add the required START_HOUR and END_HOUR parameters
+        scheduled_events = schedule_events(
+            events_df, 
+            availability_df,
+            START_HOUR,
+            END_HOUR
+        )
+        return jsonify(scheduled_events)
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+def schedule_events(events_df: pd.DataFrame, availability_df: pd.DataFrame, 
+                   start_hour: int, end_hour: int) -> list:
+    try:
+        scheduled_events = []
+        print(f"Processing {len(events_df)} events")
+        
+        for idx, event in events_df.iterrows():
+            print(f"Processing event {idx}: {event['name']}")
+            print(f"Wished by: {event['wished_by']}")
+            
+            best_slot = find_best_time(event, availability_df, start_hour, end_hour)
+            if best_slot:
+                print(f"Found slot for event {event['name']}: {best_slot}")
+                scheduled_events.append(best_slot)
+            else:
+                print(f"No suitable slot found for event {event['name']}")
+        
+        print(f"Total scheduled events: {len(scheduled_events)}")
+        scheduled_events.sort(key=lambda x: x['attendance_percentage'], reverse=True)
+        return scheduled_events
+    except Exception as e:
+        print(f"Error scheduling events: {str(e)}")
+        return []
+    
 if __name__ == '__main__':
     initialize_data()
     app.run(debug=True)

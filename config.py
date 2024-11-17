@@ -1,4 +1,3 @@
-# Time configuration
-START_HOUR = 6  # 6 AM
-END_HOUR = 22   # 6 PM
-TIME_INTERVAL = "1H"  # 1 hour intervals
+START_HOUR = 0
+END_HOUR = 0
+TIME_INTERVAL = 1
